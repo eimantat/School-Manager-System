@@ -1,6 +1,11 @@
 from django.contrib import admin
 from .models import City, District, EducationLevel, SchoolType, AcademicYear, School
-
+from jalali_date.admin import ModelAdminJalaliMixin
+class RTLAdmin(admin.ModelAdmin):
+    class Media:
+        css = {
+            "all": ("admin/css/rtl.css",)
+        }
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
@@ -31,7 +36,7 @@ class SchoolTypeAdmin(admin.ModelAdmin):
 
 
 @admin.register(AcademicYear)
-class AcademicYearAdmin(admin.ModelAdmin):
+class AcademicYearAdmin(ModelAdminJalaliMixin,admin.ModelAdmin):
     list_display = ("title", "start_date", "end_date", "is_active")
     list_filter = ("is_active",)
     search_fields = ("title",)

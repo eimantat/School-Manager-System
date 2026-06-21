@@ -1,0 +1,46 @@
+/* فعال کردن راست‌چین کلی */
+html {
+    direction: rtl;
+}
+
+/* راست‌چین کردن بدنه */
+body {
+    direction: rtl;
+    text-align: right;
+}
+
+/* اصلاح منو کناری */
+#nav-sidebar {
+    right: 0;
+    left: auto;
+}
+
+#content {
+    margin-right: 280px;
+    margin-left: 0;
+}
+
+/* فرم‌ها */
+.form-row {
+    text-align: right;
+}
+
+/* لیست‌ها */
+.results table {
+    direction: rtl;
+}
+
+/* هدر */
+#header {
+    direction: rtl;
+}
+
+/* فیلترهای سمت راست */
+#changelist-filter {
+    float: left;
+}
+
+/* breadcrumbs */
+div.breadcrumbs {
+    text-align: right;
+}

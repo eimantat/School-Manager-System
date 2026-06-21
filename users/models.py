@@ -8,13 +8,13 @@ class User(AbstractUser):
 
     national_code = models.CharField(
         max_length=10,
-        unique=True,
+        null=True,
         verbose_name='کد ملی'
     )
 
     phone_number = models.CharField(
         max_length=20,
-        unique=True,
+        null=True,
         verbose_name='شماره موبایل'
     )
 
@@ -42,6 +42,22 @@ class User(AbstractUser):
         null=True,
         verbose_name='ایمیل'
     )
+    GENDER_CHOICES = (
+        ('M','مرد'),
+        ('F','زن')
+    )
+    gender = models.CharField(max_length=1,choices=GENDER_CHOICES,verbose_name="جنسیت",null=True)
+    mother_name = models.CharField(max_length=20,verbose_name="نام مادر",null=True,blank=True)
+    PARENT_STATUS_CHOICE = (
+        ('alive',"در قید حیات"),
+        ('dead',"فوت شده"),
+        ('divorced',"متارکه"),
+        ('other',"سایر")
+    )
+    father_status = models.CharField(max_length=10, choices=PARENT_STATUS_CHOICE, default='alive', verbose_name="وضعیت پدر")
+    mother_status = models.CharField(max_length=10, choices=PARENT_STATUS_CHOICE, default='alive', verbose_name="وضعیت مادر")
+    guardian_notes = models.TextField(verbose_name="توضیحات سرپرست", null=True, blank=True)
+
 
     def __str__(self):
         full_name = f'{self.first_name} {self.last_name}'.strip()

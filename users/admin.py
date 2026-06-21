@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User, Role, UserRole
+from jalali_date.admin import ModelAdminJalaliMixin
 
 
 @admin.register(User)
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(ModelAdminJalaliMixin,UserAdmin):
     list_display = (
         "username",
         "first_name",
@@ -43,6 +44,11 @@ class CustomUserAdmin(UserAdmin):
                 "birth_date",
                 "email",
                 "address",
+                "gender",
+                "mother_name",
+                "father_status",
+                "mother_status",
+                "guardian_notes"
             )
         }),
         ("دسترسی‌ها", {
@@ -68,7 +74,7 @@ class RoleAdmin(admin.ModelAdmin):
 
 
 @admin.register(UserRole)
-class UserRoleAdmin(admin.ModelAdmin):
+class UserRoleAdmin(ModelAdminJalaliMixin,admin.ModelAdmin):
     list_display = (
         "user",
         "role",
