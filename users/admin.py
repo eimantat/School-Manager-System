@@ -1,107 +1,50 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from jalali_date.admin import ModelAdminJalaliMixin, TabularInlineJalaliMixin
 from .models import User, Role, UserRole
-from jalali_date.admin import ModelAdminJalaliMixin
 
+# ۱. اینلاین برای نقش‌های کاربر
+class UserRoleInline(TabularInlineJalaliMixin, admin.TabularInline):
+    model = UserRole
+    extra = 1
+    # نکته: autocomplete_fields را فعلاً برداشتم تا اگر در core/admin تنظیم نشده باشد، ارور ندهد
+    verbose_name = "نقش و انتساب کاربر"
+    verbose_name_plural = "نقش‌ها و انتساب‌های کاربر"
 
+# ۲. ادمین اصلی کاربر
 @admin.register(User)
-class CustomUserAdmin(ModelAdminJalaliMixin,UserAdmin):
-    list_display = (
-        "username",
-        "first_name",
-        "last_name",
-        "national_code",
-        "phone_number",
-        "is_staff",
-        "is_active",
-    )
-
-    search_fields = (
-        "username",
-        "first_name",
-        "last_name",
-        "national_code",
-        "phone_number",
-    )
-
-    list_filter = (
-        "is_staff",
-        "is_superuser",
-        "is_active",
-    )
-
+class CustomUserAdmin(ModelAdminJalaliMixin, UserAdmin):
+    inlines = [UserRoleInline]
+    
+    list_display = ("username", "first_name", "last_name", "national_code", "is_active")
+    search_fields = ("username", "first_name", "last_name", "national_code")
+    
+    # فیلدبندی صفحه ویرایش
     fieldsets = (
-        ("اطلاعات ورود", {
-            "fields": ("username", "password")
-        }),
-        ("اطلاعات شخصی", {
-            "fields": (
-                "first_name",
-                "last_name",
-                "national_code",
-                "phone_number",
-                "father_name",
-                "birth_date",
-                "email",
-                "address",
-                "gender",
-                "mother_name",
-                "father_status",
-                "mother_status",
-                "guardian_notes"
-            )
-        }),
-        ("دسترسی‌ها", {
-            "fields": (
-                "is_active",
-                "is_staff",
-                "is_superuser",
-                "groups",
-                "user_permissions",
-            )
-        }),
-        ("تاریخ‌ها", {
-            "fields": ("last_login", "date_joined")
+        ("اطلاعات ورود", {"fields": ("username", "password")}),
+        ("اطلاعات فردی", {"fields": ("first_name", "last_name", "national_code", "father_name", "gender", "birth_date")}),
+        ("ارتباطات", {"fields": ("phone_number", "email", "address")}),
+        ("دسترسی‌های سیستمی", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("تاریخ‌های مهم", {"fields": ("last_login", "date_joined")}),
+    )
+
+    # فیلدبندی صفحه «ساخت کاربر جدید»
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("username", "password1","password2", "first_name", "last_name", "national_code", "gender"),
         }),
     )
 
+    # --- این متد باید حتماً داخل کلاس باشد (با رعایت فاصله از لبه) ---
+    def get_inline_instances(self, request, obj=None):
+        if obj is None:
+            return []  # در صفحه Add User اینلاین را نشان نده
+        return super().get_inline_instances(request, obj)
+    # ---------------------------------------------------------
 
+# ۳. ادمین مدیریت نقش‌ها
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
-    list_display = ("name", "code", "is_active")
-    search_fields = ("name", "code")
-    list_filter = ("is_active",)
-
-
-@admin.register(UserRole)
-class UserRoleAdmin(ModelAdminJalaliMixin,admin.ModelAdmin):
-    list_display = (
-        "user",
-        "role",
-        "school",
-        "academic_year",
-        "start_date",
-        "end_date",
-        "is_active",
-    )
-
-    list_filter = (
-        "role",
-        "school",
-        "academic_year",
-        "is_active",
-    )
-
-    search_fields = (
-        "user__first_name",
-        "user__last_name",
-        "user__national_code",
-        "school__name",
-    )
-
-    autocomplete_fields = (
-        "user",
-        "school",
-        "role",
-        "academic_year",
-    )
+    list_display = ('name', 'code', 'is_active')
+    search_fields = ('name', 'code')
